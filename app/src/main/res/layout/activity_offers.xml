@@ -1,0 +1,100 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@null"
+    tools:context=".MainActivity">
+
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/travel2"
+       />
+    <View
+        android:id="@+id/list_background"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primary_light" />
+
+
+
+    <TextView
+        android:id="@+id/emptyTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="There are no organized trips for the selected criteria"
+        android:textSize="20dp"
+        android:textAlignment="center"
+        android:layout_marginTop="250dp"
+        android:visibility="gone"
+        />
+
+
+
+
+    <com.github.ksoichiro.android.observablescrollview.ObservableListView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
+    <include layout="@layout/gradient_header" android:visibility="gone"/>
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_gravity="top"
+        android:minHeight="?attr/actionBarSize"
+        android:background="@color/primary_light"
+        android:titleTextColor="@color/primary_text"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+
+        />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <at.grabner.circleprogress.CircleProgressView
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:id="@+id/circleView"
+            android:layout_width="170dp"
+            android:layout_height="170dp"
+            app:cpv_autoTextSize="true"
+            app:cpv_barColor="@color/primary_text"
+            app:cpv_barWidth="20dp"
+            app:cpv_innerContourSize="0dp"
+            app:cpv_maxValue="100"
+            app:cpv_outerContourSize="0dp"
+            app:cpv_rimColor="@color/primary_light"
+            app:cpv_rimWidth="20dp"
+            app:cpv_seekMode="true"
+            app:cpv_showUnit="true"
+            app:cpv_spinColor="@color/primary_dark"
+            app:cpv_textColor="@color/primary_dark"
+            app:cpv_textScale="1"
+            app:cpv_unit="%"
+            app:cpv_unitColor="@color/primary_dark"
+            app:cpv_unitPosition="right_top"
+            app:cpv_unitScale="1"
+            app:cpv_value="10"
+            android:visibility="gone"
+            />
+
+
+    </RelativeLayout>
+    <TextView
+        android:id="@+id/helper"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+
+
+</FrameLayout>
+

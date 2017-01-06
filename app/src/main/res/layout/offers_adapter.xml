@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    android:background="@color/primary_light"
+
+    >
+
+    <com.makeramen.roundedimageview.RoundedImageView
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="13dp"
+        android:layout_marginTop="11dp"
+        android:id="@+id/offerImage"
+        android:layout_width="match_parent"
+        app:riv_corner_radius_bottom_left="15dp"
+        app:riv_corner_radius_bottom_right="15dp"
+        android:layout_height="178dp"
+        android:src="@drawable/london1"
+        android:scaleType="centerCrop"
+        />
+
+    <TextView
+        android:layout_alignParentStart="true"
+        android:id="@+id/offerDestination"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="London"
+        android:textColor="@color/primary_text"
+        android:background="@color/primary_light"
+        android:textSize="30sp"
+        android:textAllCaps="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="20dp" />
+
+    <TextView
+        android:id="@+id/offerAgency"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TestAgency"
+        android:textSize="25sp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="21dp"
+        android:layout_marginBottom="17dp"
+        android:background="@color/primary_dark"/>
+
+    <TextView
+        android:id="@+id/offerDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="12.15.2016"
+        android:textSize="25sp"
+        android:background="@color/icons"
+        android:layout_alignBaseline="@+id/offerAgency"
+        android:layout_alignBottom="@+id/offerAgency"
+        android:layout_alignStart="@+id/offerDestination"
+        android:layout_alignParentStart="true"
+        android:textColor="@color/primary_text"
+        android:layout_marginLeft="20dp" />
+
+    <TextView
+        android:id="@+id/offerPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="150 EUR for  3 nights + breakfast"
+        android:textSize="20sp"
+        android:layout_marginBottom="5dp"
+        android:layout_above="@+id/offerAgency"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="20dp"
+        android:background="@color/primary"/>
+
+
+</RelativeLayout>

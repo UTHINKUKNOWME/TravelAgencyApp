@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_reservation"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="uthinkuknowme.com.travelagencyapp.ReservationActivity">
+
+
+    <TextView
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="10dp"
+        android:layout_below="@+id/toolbarRes"
+        android:id="@+id/introTv"
+        android:textStyle="italic|bold|normal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/primary_text"
+        android:textSize="20dp"
+        android:text="Electronic reservation" />
+
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:id="@+id/nameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/introTv">
+
+        <TextView
+            android:textSize="17dp"
+            android:layout_weight="1"
+            android:id="@+id/nameTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Name" />
+
+        <EditText
+            android:textSize="17dp"
+            android:layout_weight="2"
+            android:id="@+id/editTextName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:background="@android:color/white"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:id="@+id/surnameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/nameLayout">
+
+        <TextView
+            android:textSize="17dp"
+            android:layout_weight="1"
+            android:id="@+id/surnameTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Surname" />
+
+        <EditText
+            android:textSize="17dp"
+            android:layout_weight="2"
+            android:id="@+id/editTextSurname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:background="@android:color/white"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:id="@+id/numPassengersLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/surnameLayout">
+
+        <TextView
+            android:textSize="17dp"
+            android:layout_weight="2"
+            android:id="@+id/numPassengersTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Number of passengers" />
+
+        <EditText
+            android:textSize="17dp"
+            android:layout_weight="0"
+            android:id="@+id/editTextNumberPassengers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="number"
+            android:background="@android:color/white"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:id="@+id/addressLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/numPassengersLayout">
+
+        <TextView
+            android:textSize="17dp"
+            android:layout_weight="1"
+            android:id="@+id/addressTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Address" />
+
+        <EditText
+            android:textSize="17dp"
+            android:layout_weight="2"
+            android:id="@+id/editTextAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:background="@android:color/white"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:id="@+id/birthDateLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/addressLayout">
+
+        <TextView
+            android:textSize="17dp"
+            android:layout_weight="1"
+            android:id="@+id/birthDateTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Birth date" />
+
+        <EditText
+            android:textSize="17dp"
+            android:layout_weight="2"
+            android:id="@+id/editTextBirthDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="date"
+            android:background="@android:color/white"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_below="@id/birthDateLayout"
+        android:id="@+id/mobileNumLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:textSize="17dp"
+            android:layout_weight="1"
+            android:id="@+id/mobileNumTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mobile number"
+            />
+
+        <EditText
+            android:textSize="17dp"
+            android:layout_weight="2"
+            android:id="@+id/editTextMobileNum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="number"
+            android:background="@android:color/white"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_below="@id/mobileNumLayout"
+        android:id="@+id/emailLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:textSize="17dp"
+            android:layout_weight="1"
+            android:id="@+id/emailTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Email"
+            />
+
+        <EditText
+            android:textSize="17dp"
+            android:layout_weight="2"
+            android:id="@+id/editTextEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textEmailAddress"
+            android:background="@android:color/white"/>
+    </LinearLayout>
+
+
+    <EditText
+        android:textAlignment="center"
+        android:id="@+id/additionalInfo"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:inputType="textMultiLine"
+        android:textSize="17dp"
+        android:ems="10"
+        android:text="Write here some aditional info"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_below="@+id/emailLayout"
+        android:layout_marginTop="15dp"
+        android:background="@android:color/white"/>
+
+    <Button
+        android:paddingRight="10dp"
+        android:paddingLeft="10dp"
+        android:background="@drawable/button_shape"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="25dp"
+        android:layout_below="@+id/additionalInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Finish the reservation"
+        android:id="@+id/buttonReservation" />
+
+    <android.support.v7.widget.Toolbar
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/toolbarRes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:background="@color/primary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/MyTheme1"
+        app:popupTheme="@style/ThemeOverlay.AppCompat"
+        />
+
+</RelativeLayout>
