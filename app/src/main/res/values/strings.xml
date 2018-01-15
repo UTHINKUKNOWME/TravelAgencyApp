@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">TravelAgencyApp</string>
     <string name="introText">Check the offers from your local travel agencies for an organized trip to your favourite place.</string>
+    <string name="loginUsernameTextView">USERNAME</string>
+    <string name="RegisterToolbarTitle">Sign Up</string>
+    <string name="SignUpButton">Sign Up</string>
 </resources>

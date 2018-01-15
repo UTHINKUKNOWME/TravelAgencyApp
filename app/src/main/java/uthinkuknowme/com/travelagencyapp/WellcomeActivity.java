@@ -41,7 +41,7 @@ public class WellcomeActivity extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             // When progress finished, open MainActivity
-            Intent homeIntent = new Intent(getApplicationContext(), MainActivity.class);
+            Intent homeIntent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(homeIntent);
             overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
         }

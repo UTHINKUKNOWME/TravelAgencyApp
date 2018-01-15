@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -21,18 +22,31 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.github.ksoichiro.android.observablescrollview.ObservableListView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
 import com.nineoldandroids.view.ViewHelper;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
 
 import at.grabner.circleprogress.CircleProgressView;
-import uthinkuknowme.com.travelagencyapp.Utils.DBHelperOffers;
-import uthinkuknowme.com.travelagencyapp.Utils.OffersProvider;
+import uthinkuknowme.com.travelagencyapp.Utils.Http;
+import uthinkuknowme.com.travelagencyapp.Utils.Offer;
 import uthinkuknowme.com.travelagencyapp.adapters.OffersAdapter;
 
 
@@ -45,17 +59,21 @@ public class OffersActivity extends AppCompatActivity implements ObservableScrol
     private View mListBackgroundView;
     private ObservableListView mListView;
     private int mParallaxImageHeight;
-    private Cursor mCursor;
+    //    private Cursor mCursor;
     private OffersAdapter mAdapter;
     private TextView emptyTextView;
 
     String mSelectionClause;
     String[] selectionArgs;
-    String destinationSearch;
+    String destinationSearch, agencySearch;
     String dateSearch, item;
     boolean setEmptyText;
 
     Intent goDetails;
+
+    private Volley volley;
+
+    private ArrayList<Offer> offers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,18 +91,19 @@ public class OffersActivity extends AppCompatActivity implements ObservableScrol
         //getSupportLoaderManager().initLoader(0,null,this);
 
 
+        offers = new ArrayList<>();
+
         mImageView = (ImageView) findViewById(R.id.image);
         myToolbar = (Toolbar) findViewById(R.id.toolbar);
         mListView = (ObservableListView) findViewById(R.id.list);
         emptyTextView = (TextView) findViewById(R.id.emptyTextView);
         mListBackgroundView = findViewById(R.id.list_background);
 
+
         setSupportActionBar(myToolbar);
         getSupportActionBar().setTitle("");
 
         new LoadData().execute();
-
-
 //        // Delete offers
 //        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 //            @Override
@@ -145,18 +164,18 @@ public class OffersActivity extends AppCompatActivity implements ObservableScrol
 
 
     }
-
-    private void insertOffers(){
-
-
-    }
-
-    private void deleteOffer(final long id) {
-
-        Uri uri = Uri.parse(OffersProvider.CONTENT_URI + "/" + id);
-        getContentResolver().delete(OffersProvider.CONTENT_URI, DBHelperOffers.OFFER_ID + "=" + uri.getLastPathSegment(), null);
-        //restartLoader();
-    }
+//
+//    private void insertOffers(){
+//
+//
+//    }
+//
+//    private void deleteOffer(final long id) {
+//
+//        Uri uri = Uri.parse(OffersProvider.CONTENT_URI + "/" + id);
+//        getContentResolver().delete(OffersProvider.CONTENT_URI, DBHelperOffers.OFFER_ID + "=" + uri.getLastPathSegment(), null);
+//        //restartLoader();
+//    }
 
 
 //
@@ -205,6 +224,7 @@ public class OffersActivity extends AppCompatActivity implements ObservableScrol
 
     private void setupListView() {
 
+        Log.d("toni", "some shit");
         myToolbar.setBackgroundColor(ScrollUtils.getColorWithAlpha(0, getResources().getColor(R.color.primary)));
 
         mParallaxImageHeight = getResources().getDimensionPixelSize(R.dimen.parallax_image_height);
@@ -217,120 +237,202 @@ public class OffersActivity extends AppCompatActivity implements ObservableScrol
 
         // This is required to disable header's list selector effect
         paddingView.setClickable(true);
-
+        mListView.addHeaderView(paddingView);
         mListView.setScrollViewCallbacks(this);
 
         Intent intent = getIntent();
 
         destinationSearch = intent.getStringExtra("destination");
-
+        agencySearch = intent.getStringExtra("agency");
         dateSearch = intent.getStringExtra("date");
-        final String agencySearch = intent.getStringExtra("agency");
-        if ((destinationSearch == null && agencySearch == null)) {
-            mSelectionClause = DBHelperOffers.DATE + " >= ? ";
-            selectionArgs = new String[1];
-            selectionArgs[0] = dateSearch;
-            Log.d("AGENCIJAAA1", dateSearch);
-            mCursor = getContentResolver().query(OffersProvider.CONTENT_URI, DBHelperOffers.AllColumns, mSelectionClause, selectionArgs, null);
+        Log.d("toni DATA", dateSearch);
+        Http http = new Http();
+        String url = "http://isturagen.azurewebsites.net/Service1.svc/Offers";
+        String json = http.makeServiceCall(url);
 
-        } else if (((destinationSearch != null && agencySearch != null)) && destinationSearch.equalsIgnoreCase("any destination") && agencySearch.equalsIgnoreCase("any agency")) {
+        if (json != null) {
+            try {
+                JSONArray array = new JSONArray(json);
+                Log.d("toni", array.toString());
+                for (int i = 0; i < array.length(); i++) {
+                    JSONObject jsonObject = array.getJSONObject(i);
 
-            mSelectionClause = DBHelperOffers.DATE + " >= ? ";
-            selectionArgs = new String[1];
-            selectionArgs[0] = dateSearch;
-            //Log.d("AGENCIJAAA2", dateSearch);
-            mCursor = getContentResolver().query(OffersProvider.CONTENT_URI, DBHelperOffers.AllColumns, mSelectionClause, selectionArgs, null);
+                    String id = jsonObject.getString("id");
+                    String price = jsonObject.getString("price");
+                    String city = jsonObject.getString("city");
+                    String agency = jsonObject.getString("agency");
+                    String promo = jsonObject.getString("promo");
+                    String dateString = jsonObject.getString("date");
 
-        } else if ((destinationSearch == null) || (destinationSearch.equalsIgnoreCase("any destination") && agencySearch != null && !(agencySearch.equalsIgnoreCase("any agency")))) {
-            mSelectionClause = "(" + DBHelperOffers.AGENCY + " = ?" +
-                    " AND " + DBHelperOffers.DATE + " >= ? " + ")";
-            selectionArgs = new String[2];
-            selectionArgs[0] = agencySearch;
-            selectionArgs[1] = dateSearch;
-            //Log.d("Destinacija : ", agencySearch);
-            //Log.d("Data : ", dateSearch);
-            mCursor = getContentResolver().query(OffersProvider.CONTENT_URI, DBHelperOffers.AllColumns, mSelectionClause, selectionArgs, null);
+                    Offer offer = new Offer(city, promo, dateString, agency, price, id);
 
-        } else if ((agencySearch == null) || (agencySearch.equalsIgnoreCase("any agency")) && !destinationSearch.equalsIgnoreCase("any destination")) {
-            mSelectionClause = "(" + DBHelperOffers.DESTINATION + " = ?" +
-                    " AND " + DBHelperOffers.DATE + " >= ? " + ")";
-            selectionArgs = new String[2];
-            selectionArgs[0] = destinationSearch;
-            selectionArgs[1] = dateSearch;
-            //Log.d("Destinacija : ", destinationSearch);
-            //Log.d("Data : ", dateSearch);
-            mCursor = getContentResolver().query(OffersProvider.CONTENT_URI, DBHelperOffers.AllColumns, mSelectionClause, selectionArgs, null);
+                    if ((destinationSearch == null && agencySearch == null)) {
 
-        } else if (dateSearch != null) {
-            mSelectionClause = "(" + DBHelperOffers.DESTINATION + " = ?" + " AND " + DBHelperOffers.AGENCY + " = ?" +
-                    " AND " + DBHelperOffers.DATE + " >= ? " + ")";
-            selectionArgs = new String[3];
-            selectionArgs[0] = destinationSearch;
-            selectionArgs[1] = agencySearch;
-            selectionArgs[2] = dateSearch;
-           // Log.d("AGENCIJAAA", dateSearch);
-            mCursor = getContentResolver().query(OffersProvider.CONTENT_URI, DBHelperOffers.AllColumns, mSelectionClause, selectionArgs, null);
+                        if (checkDate(offer)) {
+                            offers.add(offer);
+                        }
+
+                    } else if (((destinationSearch != null && agencySearch != null)) && destinationSearch.equalsIgnoreCase("any destination") && agencySearch.equalsIgnoreCase("any agency")) {
+                        if (checkDate(offer)) {
+                            offers.add(offer);
+                        }
+
+                    } else if ((destinationSearch == null) || (destinationSearch.equalsIgnoreCase("any destination") && agencySearch != null && !(agencySearch.equalsIgnoreCase("any agency")))) {
+                        if (checkAgency(offer)) {
+                            offers.add(offer);
+                        }
+
+                    } else if ((agencySearch == null) || (agencySearch.equalsIgnoreCase("any agency")) && !destinationSearch.equalsIgnoreCase("Any destination")) {
+                        if (checkDest(offer)) {
+                            offers.add(offer);
+                        }
+
+                    } else if (((destinationSearch != null && agencySearch != null)) && !destinationSearch.equalsIgnoreCase("Any destination") && !agencySearch.equalsIgnoreCase("any agency")) {
+                        if (checkDest(offer) && checkAgency(offer)) {
+                            offers.add(offer);
+                        }
+
+                    } else if (((destinationSearch != null && agencySearch == null) && destinationSearch.equalsIgnoreCase("Any destination")) || ((destinationSearch == null && agencySearch != null) && agencySearch.equalsIgnoreCase("any agency"))) {
+                        if (checkDate(offer)) {
+                            offers.add(offer);
+                        }
+                    } else {
+                        if (checkDate(offer)) {
+                            offers.add(offer);
+                        }
+                    }
+
+//                    offers.add(offer);
+
+                    Log.d("toni", offer.toString());
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
+
+//        RequestQueue queue = volley.newRequestQueue(this);
+
+//
+//        StringRequest stringRequest =  new StringRequest(Request.Method.GET, url,
+//                new Response.Listener<String>() {
+//                    @Override
+//                    public void onResponse(String response) {
+//                        // Display the first 500 characters of the response string.
+////                            mTextView.setText("Response is: "+ response.substring(0,500));
+//                        Log.d("toni", response);
+//                    }
+//                }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                Log.d("toni",error.toString());
+//
+//            }
+//        });
+//        queue.add(stringRequest);
 
 
         //Set the header picture accordingly to the destination
-        if (destinationSearch != null) {
-            if (destinationSearch.equalsIgnoreCase("london")) {
-                mImageView.setImageResource(R.drawable.london2);
-            } else if (destinationSearch.equalsIgnoreCase("madrid")) {
-                mImageView.setImageResource(R.drawable.madrid2);
-            } else if (destinationSearch.equalsIgnoreCase("paris")) {
-                mImageView.setImageResource(R.drawable.paris2);
-            }
-        }
+
 
 //        // Since loading data from database is heavy-duty job, we will load the data in the Thread. If you do not explicitly start CursorAdapter
 //        // in its own thread then it will run on the main (UI) thread which may be noticeable as jittery or slow to respond interface by your users.
-//        new Handler().post(new Runnable() {
+//        new Handler(Looper.getMainLooper()).post(new Runnable() {
 //            @Override
 //            public void run() {
-//                mAdapter = new OffersAdapter(getApplicationContext(),mCursor);
-//                if(mAdapter.isEmpty()) {
-//                    mListView.setAdapter(mAdapter);
-//                    emptyTextView.setVisibility(View.VISIBLE);
-//                    new EmptyListView().execute();
-//                }else{
-//                    mListView.setAdapter(mAdapter);
-//                }
-//            }
+//
 //        });
 
 
-        mListView.addHeaderView(paddingView);
-        mListView.setDividerHeight(0);
-
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        runOnUiThread(new Runnable() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                mCursor.moveToPosition(i - 1);
+            public void run() {
 
-                item = mCursor.getString(mCursor.getColumnIndex(DBHelperOffers.DESTINATION));
-                int id = mCursor.getInt(mCursor.getColumnIndex(DBHelperOffers.OFFER_ID));
-                String detailsText = mCursor.getString(mCursor.getColumnIndex(DBHelperOffers.DETAILS));
-                String date = mCursor.getString(mCursor.getColumnIndex(DBHelperOffers.DATE));
-                String agencyReservation = mCursor.getString(mCursor.getColumnIndex(DBHelperOffers.AGENCY));
-                //Toast.makeText(getApplicationContext(), "You selected : " + item + " " + idPrefs, Toast.LENGTH_SHORT).show();
+                mAdapter = new OffersAdapter(getApplicationContext(), offers);
+                if (mAdapter.isEmpty()) {
+                    mListView.setAdapter(mAdapter);
+                    emptyTextView.setVisibility(View.VISIBLE);
+//                    new EmptyListView().execute();
+                } else {
+                    mListView.setAdapter(mAdapter);
+                    if (destinationSearch != null) {
+                        if (destinationSearch.equalsIgnoreCase("london")) {
+                            mImageView.setImageResource(R.drawable.london2);
+                        } else if (destinationSearch.equalsIgnoreCase("madrid")) {
+                            mImageView.setImageResource(R.drawable.madrid2);
+                        } else if (destinationSearch.equalsIgnoreCase("paris")) {
+                            mImageView.setImageResource(R.drawable.paris2);
+                        }
+                    }
+                    mListView.setDividerHeight(0);
 
-                goDetails = new Intent(OffersActivity.this, DetailsActivity.class);
-                goDetails.putExtra("idPrefs", id);
-                goDetails.putExtra("destination", item);
-                goDetails.putExtra("details", detailsText);
-                goDetails.putExtra("date", date);
-                goDetails.putExtra("dateSearch", dateSearch);
-                goDetails.putExtra("agency", agencySearch);
-                goDetails.putExtra("agencyReservation", agencyReservation);
-                goDetails.putExtra("destinationBack", destinationSearch);
-                startActivity(goDetails);
+                    mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
+                            goDetails = new Intent(OffersActivity.this, DetailsActivity.class);
+
+                            String date = offers.get(i-1).getDate();
+                            SimpleDateFormat fromUser = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss a");
+                            SimpleDateFormat myFormat = new SimpleDateFormat("dd.MM.yyyy");
+                            String reformattedStr = "";
+                            try {
+                                reformattedStr = myFormat.format(fromUser.parse(date));
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                            goDetails.putExtra("id", offers.get(i-1).getId());
+                            goDetails.putExtra("destination", offers.get(i-1).getDest());
+                            goDetails.putExtra("date", reformattedStr);
+                            goDetails.putExtra("dateSearch", dateSearch);
+                            goDetails.putExtra("agency", agencySearch);
+                            goDetails.putExtra("destinationBack", destinationSearch);
+                            startActivity(goDetails);
+
+                        }
+                    });
+                }
             }
+
+
         });
 
+    }
 
+    boolean checkDate(Offer offer) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat offerDate = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss a");
+        Date strDate = null;
+        Date oDate = null;
+        try {
+            strDate = sdf.parse(dateSearch);
+            oDate = offerDate.parse(offer.getDate());
+            Log.d("toni", strDate.toString());
+            Log.d("toni", oDate.toString());
+            if (strDate.before(oDate)) {
+//                offers.add(offer);
+                return true;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    boolean checkAgency(Offer offer) {
+        if (offer.getAgency().equals(agencySearch) && checkDate(offer)) {
+            return true;
+//            offers.add(offer);
+        }
+        return false;
+    }
+
+    boolean checkDest(Offer offer) {
+        if (offer.getDest().equals(destinationSearch) && checkDate(offer)) {
+//            offers.add(offer);
+            return true;
+        }
+        return false;
     }
 
     public class LoadData extends AsyncTask<Void, Void, Void> {
@@ -351,31 +453,19 @@ public class OffersActivity extends AppCompatActivity implements ObservableScrol
 //            emptyTextView.setVisibility(View.GONE);
 
             progressDialog = ProgressDialog.show(OffersActivity.this, "Searching for organized trips", "Please wait...", false, false);
-
             // Since loading data from database is heavy-duty job, we will load the data in the Thread. If you do not explicitly start CursorAdapter
             // in its own thread then it will run on the main (UI) thread which may be noticeable as jittery or slow to respond interface by your users.
-            new Handler().post(new Runnable() {
-                @Override
-                public void run() {
-                    mAdapter = new OffersAdapter(getApplicationContext(), mCursor);
-                    if (mAdapter.isEmpty()) {
-                        mListView.setAdapter(mAdapter);
-                        setEmptyText = true;
-                        new EmptyListView().execute();
-                    } else {
-                        mListView.setAdapter(mAdapter);
-                    }
 
-                }
-            });
 
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
+
             setupListView();
             try {
                 Thread.sleep(3000);
+
             } catch (InterruptedException ie) {
                 ie.printStackTrace();
             }
@@ -387,11 +477,6 @@ public class OffersActivity extends AppCompatActivity implements ObservableScrol
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-//            try {
-//                Thread.sleep(2000);
-//            } catch (InterruptedException ie) {
-//                ie.printStackTrace();
-//            }
 
             myToolbar.setVisibility(View.VISIBLE);
             mListView.setVisibility(View.VISIBLE);

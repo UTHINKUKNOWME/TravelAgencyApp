@@ -53,12 +53,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="16dp"
-                    android:text="dasdasdsadsadad"
                     android:textColor="@color/primary_text"
                     android:textSize="15dp" />
 
                 <TextView
-                    android:text="dsadasdasd"
                     android:id="@+id/Rtext1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

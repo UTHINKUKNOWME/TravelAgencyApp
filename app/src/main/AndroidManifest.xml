@@ -18,24 +18,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity"
-                android:screenOrientation="portrait"
-            />
-        <activity android:name=".OffersActivity"
-
-            />
-
-        <provider
-            android:name=".Utils.OffersProvider"
-            android:authorities="com.uthinkuknowme.com.travelagencyapp.offersprovider"></provider>
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".OffersActivity" />
 
         <activity android:name=".DetailsActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDSh4vfDCJIRQWOo9w5ZXhLTHaPjahASdw"></meta-data>
+            android:value="AIzaSyDSh4vfDCJIRQWOo9w5ZXhLTHaPjahASdw" />
 
-        <activity android:name=".ReservationActivity"></activity>
+        <activity android:name=".LoginActivity"></activity>
     </application>
 
 </manifest>

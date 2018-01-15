@@ -2,7 +2,9 @@ package uthinkuknowme.com.travelagencyapp;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -35,6 +37,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -54,13 +57,14 @@ public class DetailsActivity extends AppCompatActivity {
     private ImageView revImage;
     private Toolbar myToolbar;
     private ProgressDialog progressDialog;
+    private SharedPreferences pref;
 
     public static int[] mResources = new int[2];
     private String temp;
 
     String reqDetailsURL;
     Bitmap img;
-    String reformattedStr, destination, agency, agencyReservation, destinationBack;
+    String reformattedStr, destination, agency, agencyReservation, destinationBack, resID;
 
     static final int MY_PERMISSIONS_REQUEST_INTERNET = 1;
 
@@ -78,7 +82,8 @@ public class DetailsActivity extends AppCompatActivity {
 
 
 
-
+        pref = getSharedPreferences("MyPref", Context.MODE_PRIVATE);
+        Log.d("toni USERNAME", pref.getString("username", null));
         mCustomPagerAdapter = new CustomPagerAdapter(this);
 
         mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -93,39 +98,39 @@ public class DetailsActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         destination = intent.getStringExtra("destination");
-        destinationBack = intent.getStringExtra("destinationBack");
-        String detailsText = intent.getStringExtra("details");
+//        destinationBack = intent.getStringExtra("destinationBack");
+//        String detailsText = intent.getStringExtra("details");
         final String dateShow = intent.getStringExtra("date");
         agency = intent.getStringExtra("agency");
         final String dateSearch = intent.getStringExtra("dateSearch");
         agencyReservation = intent.getStringExtra("agencyReservation");
-
-        SimpleDateFormat fromUser = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat myFormat = new SimpleDateFormat("dd.MM.yyyy");
-
-        reformattedStr = "";
-        try {
-            reformattedStr = myFormat.format(fromUser.parse(dateShow));
-        } catch (ParseException e1) {
-            e1.printStackTrace();
-        }
+        resID = intent.getStringExtra("id");
+//        SimpleDateFormat fromUser = new SimpleDateFormat("yyyy-MM-dd");
+//        SimpleDateFormat myFormat = new SimpleDateFormat("dd.MM.yyyy");
+//
+//        reformattedStr = "";
+//        try {
+//            reformattedStr = myFormat.format(fromUser.parse(dateShow));
+//        } catch (ParseException e1) {
+//            e1.printStackTrace();
+//        }
 
         setSupportActionBar(myToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setTitle(destination + " - " + reformattedStr);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setTitle(destination + " - " + dateShow);
         myToolbar.setTitleTextColor(Color.WHITE);
 
-        myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent goBack = new Intent(DetailsActivity.this, OffersActivity.class);
-                goBack.putExtra("destination", destinationBack);
-                goBack.putExtra("date", dateSearch);
-                goBack.putExtra("agency", agency);
-                startActivity(goBack);
-            }
-        });
+//        myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent goBack = new Intent(DetailsActivity.this, OffersActivity.class);
+//                goBack.putExtra("destination", destinationBack);
+//                goBack.putExtra("date", dateSearch);
+//                goBack.putExtra("agency", agency);
+//                startActivity(goBack);
+//            }
+//        });
 
 
         final Random random = new Random();
@@ -172,7 +177,7 @@ public class DetailsActivity extends AppCompatActivity {
             }
         }, 3000);
 
-        detailsTxt.setText(detailsText);
+//        detailsTxt.setText(detailsText);
 
 
         new ObtainReview().execute();
@@ -269,11 +274,14 @@ public class DetailsActivity extends AppCompatActivity {
 
         if (id == R.id.make_rezervation) {
 
-            Intent goReservation = new Intent(DetailsActivity.this, ReservationActivity.class);
-            goReservation.putExtra("destination", destination);
-            goReservation.putExtra("date", reformattedStr);
-            goReservation.putExtra("agency", agencyReservation);
-            startActivity(goReservation);
+            // Handle the click on rez icon
+
+                new Reservation().execute();
+//            Intent goReservation = new Intent(DetailsActivity.this, ReservationActivity.class);
+//            goReservation.putExtra("destination", destination);
+//            goReservation.putExtra("date", reformattedStr);
+//            goReservation.putExtra("agency", agencyReservation);
+//            startActivity(goReservation);
             //Toast.makeText(this,"U clicked on rezervation",Toast.LENGTH_LONG).show();
             return true;
         }
@@ -306,6 +314,50 @@ public class DetailsActivity extends AppCompatActivity {
             progressDialog.dismiss();
             revAuthorName.setVisibility(View.VISIBLE);
             revText.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public class Reservation extends AsyncTask<Void,Void,Void> {
+
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+
+                Log.d("toni", resID);
+                URL url = new URL("http://isturagen.azurewebsites.net/Service1.svc/Resev"); //Enter URL here
+                HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
+                httpURLConnection.setDoOutput(true);
+                httpURLConnection.setRequestMethod("POST"); // here you are telling that it is a POST request, which can be changed into "PUT", "GET", "DELETE" etc.
+                httpURLConnection.setRequestProperty("Content-Type", "application/json"); // here you are setting the `Content-Type` for the data you are sending which is `application/json`
+                httpURLConnection.connect();
+
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("username", pref.getString("username", null));
+                jsonObject.put("offersId", resID);
+
+                DataOutputStream wr = new DataOutputStream(httpURLConnection.getOutputStream());
+                wr.writeBytes(jsonObject.toString());
+                wr.flush();
+                wr.close();
+
+
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Toast.makeText(getApplicationContext(),"Successful reservation !",Toast.LENGTH_LONG).show();
         }
     }
 
